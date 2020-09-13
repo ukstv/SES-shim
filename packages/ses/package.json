@@ -36,8 +36,8 @@
     "demo": "http-server -o /demos"
   },
   "dependencies": {
-    "@agoric/assert": "0.1.0",
-    "@agoric/console": "~0.1.0",
+    "@agoric/assert": "^0.1.0-dev",
+    "@agoric/console": "^0.1.0-dev",
     "@agoric/babel-standalone": "^7.9.5",
     "@agoric/make-hardener": "^0.1.0",
     "@agoric/transform-module": "^0.4.1"

@@ -13,7 +13,7 @@
 // limitations under the License.
 
 import makeHardener from '@agoric/make-hardener';
-import { assert, details, q } from '@agoric/assert';
+import { assert, details as d, quote as q } from '@agoric/assert';
 import { keys } from './commons.js';
 import { makeIntrinsicsCollector } from './intrinsics.js';
 import whitelistIntrinsics from './whitelist-intrinsics.js';
@@ -76,7 +76,7 @@ export function repairIntrinsics(
   const extraOptionsNames = Reflect.ownKeys(extraOptions);
   assert(
     extraOptionsNames.length === 0,
-    details`lockdown(): non supported option ${q(extraOptionsNames)}`,
+    d`lockdown(): non supported option ${q(extraOptionsNames)}`,
   );
 
   // Asserts for multiple invocation of lockdown().
@@ -84,7 +84,7 @@ export function repairIntrinsics(
     for (const name of keys(firstOptions)) {
       assert(
         options[name] === firstOptions[name],
-        details`lockdown(): cannot re-invoke with different option ${q(name)}`,
+        d`lockdown(): cannot re-invoke with different option ${q(name)}`,
       );
     }
     return alreadyHardenedIntrinsics;

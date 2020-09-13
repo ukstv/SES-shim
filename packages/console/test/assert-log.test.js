@@ -5,7 +5,7 @@
 
 // The following lines mentioning tap are what we do for now instead.
 import tap from 'tap';
-import { assert, details, q } from '@agoric/assert';
+import { assert, details as d, quote as q } from '@agoric/assert';
 import { assertLogs, throwsAndLogs } from './throws-and-logs.js';
 
 const { test } = tap;
@@ -106,11 +106,11 @@ test('causal tree', t => {
       const fooErr = new SyntaxError('foo');
       let err1;
       try {
-        assert.fail(details`synful ${fooErr}`);
+        assert.fail(d`synful ${fooErr}`);
       } catch (e1) {
         err1 = e1;
       }
-      assert.fail(details`because ${err1}`);
+      assert.fail(d`because ${err1}`);
     },
     /because/,
     [
@@ -125,11 +125,11 @@ test('causal tree', t => {
       const fooErr = new SyntaxError('foo');
       let err1;
       try {
-        assert.fail(details`synful ${fooErr}`);
+        assert.fail(d`synful ${fooErr}`);
       } catch (e1) {
         err1 = e1;
       }
-      assert.fail(details`because ${err1}`);
+      assert.fail(d`because ${err1}`);
     },
     /because/,
     [
@@ -182,12 +182,12 @@ test('a causal tree falls silently', t => {
       const fooErr = new SyntaxError('foo');
       let err1;
       try {
-        assert.fail(details`synful ${fooErr}`);
+        assert.fail(d`synful ${fooErr}`);
       } catch (e1) {
         err1 = e1;
       }
       try {
-        assert.fail(details`because ${err1}`);
+        assert.fail(d`because ${err1}`);
       } catch (e2) {
         t.assert(e2 instanceof RangeError);
       }
@@ -203,12 +203,12 @@ test('a causal tree falls silently', t => {
       const fooErr = new SyntaxError('foo');
       let err1;
       try {
-        assert.fail(details`synful ${fooErr}`);
+        assert.fail(d`synful ${fooErr}`);
       } catch (e1) {
         err1 = e1;
       }
       try {
-        assert.fail(details`because ${err1}`);
+        assert.fail(d`because ${err1}`);
       } catch (e2) {
         t.assert(e2 instanceof RangeError);
       }
@@ -227,7 +227,7 @@ test('assert equals', t => {
   ]);
   throwsAndLogs(
     t,
-    () => assert.equal(5, 6, details`${5} !== ${6}`),
+    () => assert.equal(5, 6, d`${5} !== ${6}`),
     /\(a number\) !== \(a number\)/,
     [
       [RangeError, 'ERROR_MESSAGE:', 5, '!==', 6],
@@ -236,7 +236,7 @@ test('assert equals', t => {
   );
   throwsAndLogs(
     t,
-    () => assert.equal(5, 6, details`${5} !== ${q(6)}`),
+    () => assert.equal(5, 6, d`${5} !== ${q(6)}`),
     /\(a number\) !== 6/,
     [
       [RangeError, 'ERROR_MESSAGE:', 5, '!==', 6],
@@ -277,7 +277,7 @@ test('assert typeof', t => {
 test('assert q', t => {
   throwsAndLogs(
     t,
-    () => assert.fail(details`<${'bar'},${q('baz')}>`),
+    () => assert.fail(d`<${'bar'},${q('baz')}>`),
     /<\(a string\),"baz">/,
     [
       [RangeError, 'ERROR_MESSAGE:', '<', 'bar', ',', 'baz', '>'],
@@ -285,14 +285,14 @@ test('assert q', t => {
     ],
   );
   const list = ['a', 'b', 'c'];
-  throwsAndLogs(t, () => assert.fail(details`${q(list)}`), /\["a","b","c"\]/, [
+  throwsAndLogs(t, () => assert.fail(d`${q(list)}`), /\["a","b","c"\]/, [
     [RangeError, 'ERROR_MESSAGE:', list],
     ['log', 'Caught', RangeError],
   ]);
   const repeat = { x: list, y: list };
   throwsAndLogs(
     t,
-    () => assert.fail(details`${q(repeat)}`),
+    () => assert.fail(d`${q(repeat)}`),
     /{"x":\["a","b","c"\],"y":"<\*\*seen\*\*>"}/,
     [
       [RangeError, 'ERROR_MESSAGE:', repeat],
@@ -303,7 +303,7 @@ test('assert q', t => {
   list[1] = list;
   throwsAndLogs(
     t,
-    () => assert.fail(details`${q(list)}`),
+    () => assert.fail(d`${q(list)}`),
     /\["a","<\*\*seen\*\*>","c"\]/,
     [
       [RangeError, 'ERROR_MESSAGE:', list],
@@ -312,7 +312,7 @@ test('assert q', t => {
   );
   throwsAndLogs(
     t,
-    () => assert.fail(details`${q(repeat)}`),
+    () => assert.fail(d`${q(repeat)}`),
     /{"x":\["a","<\*\*seen\*\*>","c"\],"y":"<\*\*seen\*\*>"}/,
     [
       [RangeError, 'ERROR_MESSAGE:', repeat],

@@ -1,4 +1,4 @@
-import { assert, details, q } from '@agoric/assert';
+import { assert, details as d, quote as q } from '@agoric/assert';
 import {
   getOwnPropertyDescriptor,
   immutableObject,
@@ -22,7 +22,7 @@ const FERAL_EVAL = eval;
 const alwaysThrowHandler = new Proxy(immutableObject, {
   get(_shadow, prop) {
     assert.fail(
-      details`Please report unexpected scope handler trap: ${q(String(prop))}`,
+      d`Please report unexpected scope handler trap: ${q(String(prop))}`,
     );
   },
 });

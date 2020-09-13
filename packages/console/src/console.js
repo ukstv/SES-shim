@@ -94,26 +94,7 @@ export const consoleOmittedProperties = freeze([
 ]);
 
 /**
- * @typedef {readonly [string, ...any[]]} LogRecord
- *
- * @typedef {Object} LoggingConsoleKit
- * @property {LoggingConsole} loggingConsole
- * @property {() => readonly LogRecord[]} takeLog
- */
-
-/**
- * A mock console that just accumulates the contents of all whitelisted calls,
- * making them available to callers of `takeLog()`. Calling `takeLog()`
- * consumes these, so later calls to `takeLog()` will only provide a log of
- * calls that have happened since then.
- *
- * A logging console also implements the custom `rememberErrorInfo` method,
- * which the `@agoric/assert` module feature tests for, so it captures and
- * reports error annotations as well. Unlike the causalConsole below, the
- * logging console does not delay reporting these annotations. It just
- * immediately adds to the log what it was asked to remember.
- *
- * @returns {LoggingConsoleKit}
+ * @type {MakeLoggingConsoleKit}
  */
 const makeLoggingConsoleKit = () => {
   // Not frozen!
@@ -146,13 +127,14 @@ const makeLoggingConsoleKit = () => {
   };
   freeze(takeLog);
 
-  const typedLoggingConsole = /** @type {LoggingConsole} */ (loggingConsole);
+  const typedLoggingConsole = /** @type {VirtualConsole} */ (loggingConsole);
 
   return freeze({ loggingConsole: typedLoggingConsole, takeLog });
 };
 freeze(makeLoggingConsoleKit);
 export { makeLoggingConsoleKit };
 
+/** @type {GetStackString} */
 const defaultGetStackString = error => {
   if (!('stack' in error)) {
     return '';
@@ -165,17 +147,9 @@ const defaultGetStackString = error => {
   return stackString.slice(pos + 1); // exclude the initial newline
 };
 
-/**
- * Makes a causal console wrapper of a base console, where the causal wrappper
- * uses `decodeConsole` to recognize
- *
- * @param {Console} baseConsole
- * @returns {Console}
- */
-const makeCausalConsole = (
-  baseConsole,
-  getStackString = defaultGetStackString,
-) => {
+/** @type {MakeCausalConsole} */
+const makeCausalConsole = (baseConsole, options = {}) => {
+  const { getStackString = defaultGetStackString } = options;
   // by "tagged", we mean first sent to the baseConsole as an argument in a
   // console level method call, in which it is shown with an identifying tag
   // number. We number the errors according to the order in

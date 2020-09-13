@@ -1,16 +1,12 @@
 import { cycleTolerantStringify } from '@agoric/assert';
 import { makeLoggingConsoleKit, makeCausalConsole } from '../src/console.js';
 
-const { freeze, getPrototypeOf } = Object;
+const { freeze, getPrototypeOf, is: isSame } = Object;
 
 // For our internal debugging purposes
-const originalConsole = console;
-const dumpActualFlag = true;
+// const originalConsole = console;
 
 const compareLogs = freeze((t, log, goldenLog) => {
-  if (dumpActualFlag) {
-    originalConsole.log('DUMP ACTUAL:', cycleTolerantStringify(log));
-  }
   t.is(log.length, goldenLog.length, 'wrong log length');
   log.forEach((logRecord, i) => {
     const goldenRecord = goldenLog[i];
@@ -33,7 +29,7 @@ const compareLogs = freeze((t, log, goldenLog) => {
         // switching back to ava.
         // t.is(logEntry, goldenEntry);
         t.assert(
-          Object.is(logEntry, goldenEntry),
+          isSame(logEntry, goldenEntry),
           `${cycleTolerantStringify(
             logEntry,
           )} not same as ${cycleTolerantStringify(goldenEntry)}`,

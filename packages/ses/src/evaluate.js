@@ -1,7 +1,7 @@
 // Portions adapted from V8 - Copyright 2016 the V8 project authors.
 // https://github.com/v8/v8/blob/master/src/builtins/builtins-function.cc
 
-import { assert, details } from '@agoric/assert';
+import { assert, details as d } from '@agoric/assert';
 import { apply, immutableObject, proxyRevocable } from './commons.js';
 import { getScopeConstants } from './scope-constants.js';
 import { createScopeHandler } from './scope-handler.js';
@@ -62,7 +62,7 @@ export function performEval(
       // the thrown error if any from evaluating the source code.
       scopeProxyRevocable.revoke();
       // TODO A GOOD PLACE TO PANIC(), i.e., kill the vat incarnation.
-      assert.fail(details`handler did not revoke useUnsafeEvaluator ${err}`);
+      assert.fail(d`handler did not revoke useUnsafeEvaluator ${err}`);
     }
   }
 }

@@ -1,4 +1,4 @@
-import { assert, details } from '@agoric/assert';
+import { assert, details as d } from '@agoric/assert';
 import test from 'tape';
 import '../ses.js';
 
@@ -40,7 +40,7 @@ test('assert - unsafe', t => {
   try {
     const obj = {};
     const fooErr = new SyntaxError('foo');
-    assert.fail(details`caused by ${fooErr},${obj}`);
+    assert.fail(d`caused by ${fooErr},${obj}`);
   } catch (barErr) {
     console.error('bar happens', barErr);
   }
@@ -54,7 +54,7 @@ test('assert - unlogged unsafe', t => {
   t.throws(() => {
     const obj = {};
     const fooErr = new SyntaxError('foo');
-    assert.fail(details`caused by ${fooErr},${obj}`);
+    assert.fail(d`caused by ${fooErr},${obj}`);
   });
   t.end();
 });
@@ -71,7 +71,7 @@ test('tameConsole - unsafe', t => {
   const obj = {};
   const faaErr = new TypeError('faa');
   const borErr = new ReferenceError('bor');
-  assert.note(borErr, details`caused by ${faaErr},${obj}`);
+  assert.note(borErr, d`caused by ${faaErr},${obj}`);
   console.log('bor happens', borErr);
   t.end();
 });
@@ -84,6 +84,6 @@ test('tameConsole - unlogged unsafe', t => {
   const obj = {};
   const ufaaErr = new TypeError('ufaa');
   const uborErr = new ReferenceError('ubor');
-  assert.note(uborErr, details`caused by ${ufaaErr},${obj}`);
+  assert.note(uborErr, d`caused by ${ufaaErr},${obj}`);
   t.end();
 });

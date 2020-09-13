@@ -65,9 +65,10 @@ const declassifiers = new WeakMap();
 /**
  * To "declassify" and quote a substitution value used in a
  * details`...` template literal, enclose that substitution expression
- * in a call to `q`. This states that the argument should appear quoted (with
- * `JSON.stringify`), in the error message of the thrown error. The payload
- * itself is still passed unquoted to the console as it would be without q.
+ * in a call to `quote`. This states that the argument should appear quoted
+ * (with `JSON.stringify`), in the error message of the thrown error. The
+ * payload itself is still passed unquoted to the console as it would be
+ * without `quote`.
  *
  * Starting from the example in the `details` comment, say instead that the
  * color the sky is supposed to be is also computed. Say that we still don't
@@ -77,7 +78,20 @@ const declassifiers = new WeakMap();
  * assert.equal(
  *   sky.color,
  *   color,
- *   details`${sky.color} should be ${q(color)}`,
+ *   details`${sky.color} should be ${quote(color)}`,
+ * );
+ * ```
+ *
+ * The normal convention is to import these as
+ * ```js
+ * import { assert, details as d, quote as q } from '@agoric/assert';
+ * ```
+ * so the above example would be
+ * ```js
+ * assert.equal(
+ *   sky.color,
+ *   color,
+ *   d`${sky.color} should be ${q(color)}`,
  * );
  * ```
  *
@@ -87,7 +101,7 @@ const declassifiers = new WeakMap();
  * @param {*} payload What to declassify
  * @returns {StringablePayload} The declassified payload
  */
-const q = payload => {
+const quote = payload => {
   // Don't harden the payload
   const result = freeze({
     toString: freeze(() => cycleTolerantStringify(payload)),
@@ -95,8 +109,13 @@ const q = payload => {
   declassifiers.set(result, payload);
   return result;
 };
-freeze(q);
-export { q };
+freeze(quote);
+export {
+  quote,
+  // TODO remove `q` once reintegration with agoric-sdk is complete.
+  /** @deprecated Use `quote`. */
+  quote as q,
+};
 
 // /////////////////////////////////////////////////////////////////////////////
 
@@ -115,7 +134,7 @@ export { ErrorInfo };
  * `errorInfoKind` whose contents are the logArgs returned by calling
  * `getLogArgs()`.
  *
- * This function feature detects whether the console has (non-standard) a
+ * This function feature detects whether the console has a (non-standard)
  * `rememberErrorInfo`. The consoles made by the `@agoric/console` package
  * have this custom method.
  * This function then calls this custom method to inform the console. For a
@@ -277,7 +296,7 @@ freeze(fail);
  * @param {Details} detailsNote The details of what was asserted
  * @returns {void}
  */
-const assertNote = (error, detailsNote) => {
+const note = (error, detailsNote) => {
   if (typeof detailsNote === 'string') {
     // If it is a string, use it as the literal part of the template so
     // it doesn't get quoted.
@@ -333,12 +352,12 @@ freeze(equal);
 const assertTypeof = (specimen, typename, optDetails) => {
   baseAssert(
     typeof typename === 'string',
-    details`${q(typename)} must be a string`,
+    details`${quote(typename)} must be a string`,
   );
   if (optDetails === undefined) {
     // Like
     // ```js
-    // optDetails = details`${specimen} must be ${q(an(typename))}`;
+    // optDetails = details`${specimen} must be ${quote(an(typename))}`;
     // ```
     // except it puts the typename into the literal part of the template
     // so it doesn't get quoted.
@@ -368,13 +387,13 @@ freeze(assertTypeof);
  *
  * The optional `optDetails` can be a string for backwards compatibility
  * with the nodejs assertion library.
- * @type {typeof baseAssert & { typeof: AssertTypeof, fail: typeof fail, equal: typeof equal, note: typeof assertNote }}
+ * @type {typeof baseAssert & { typeof: AssertTypeof, fail: typeof fail, equal: typeof equal, note: typeof note }}
  */
 const assert = assign(baseAssert, {
   equal,
   fail,
   typeof: assertTypeof,
-  note: assertNote,
+  note,
 });
 freeze(assert);
 export { assert };
